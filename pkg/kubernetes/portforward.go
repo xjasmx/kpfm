@@ -74,6 +74,8 @@ func establishPortForwarding(ctx context.Context, pf *PortForwarder, podName str
 		return fmt.Errorf("failed to create portforwarder: %w", err)
 	}
 
+	fmt.Printf("Port forwarding successful: %s:%d -> %d\n", pf.ResourceName, pf.RemotePort, pf.LocalPort)
+
 	return pfwd.ForwardPorts()
 }
 
