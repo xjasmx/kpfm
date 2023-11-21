@@ -9,7 +9,7 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/client-go/kubernetes"
+	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/portforward"
 	"k8s.io/client-go/transport/spdy"
@@ -17,8 +17,12 @@ import (
 	"github.com/xjasmx/kpfm/pkg/utils"
 )
 
+type Clientset interface {
+	CoreV1() corev1.CoreV1Interface
+}
+
 type PortForwarder struct {
-	Clientset    *kubernetes.Clientset
+	Clientset    Clientset
 	RestConfig   *rest.Config
 	Namespace    string
 	ResourceName string
@@ -27,16 +31,18 @@ type PortForwarder struct {
 	RemotePort   int
 }
 
-func NewPortForwarder(clientset *kubernetes.Clientset, config *rest.Config, namespace, resource, portMapping string) (*PortForwarder, error) {
-	localPort, remotePort, err := utils.ParsePortMapping(portMapping)
-	if err != nil {
-		return nil, fmt.Errorf("invalid port mapping format: %v", err)
-	}
-
-	resourceType, resourceName, err := parseResource(resource)
+func NewPortForwarder(clientset Clientset, config *rest.Config, namespace, resource, portMapping string) (*PortForwarder, error) {
+	err := validateInputs(namespace, resource, portMapping)
 	if err != nil {
 		return nil, err
 	}
+
+	localPort, remotePort, err := utils.ParsePortMapping(portMapping)
+	if err != nil {
+		return nil, err
+	}
+
+	resourceType, resourceName := parseResource(resource)
 
 	return &PortForwarder{
 		Clientset:    clientset,
@@ -56,6 +62,22 @@ func (pf *PortForwarder) Start(ctx context.Context) error {
 	}
 
 	return establishPortForwarding(ctx, pf, podName)
+}
+
+func validateInputs(namespace, resource, portMapping string) error {
+	if namespace == "" {
+		return fmt.Errorf("namespace cannot be empty")
+	}
+
+	if resource == "" {
+		return fmt.Errorf("resource cannot be empty")
+	}
+
+	if portMapping == "" {
+		return fmt.Errorf("portMapping cannot be empty")
+	}
+
+	return nil
 }
 
 func establishPortForwarding(ctx context.Context, pf *PortForwarder, podName string) error {
@@ -103,10 +125,10 @@ func resolvePodName(ctx context.Context, pf *PortForwarder) (string, error) {
 	}
 }
 
-func parseResource(resource string) (string, string, error) {
+func parseResource(resource string) (string, string) {
 	parts := strings.Split(resource, "/")
 	if len(parts) != 2 {
-		return parts[0], "pod", nil
+		return parts[0], "pod"
 	}
-	return parts[0], parts[1], nil
+	return parts[0], parts[1]
 }

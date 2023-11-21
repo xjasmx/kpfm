@@ -18,7 +18,7 @@ var createServiceCmd = &cobra.Command{
 
 		service := config.NewService(alias, namespace, serviceName, portMapping)
 		if err := service.Save(); err != nil {
-			return fmt.Errorf("Error creating service configuration:", err)
+			return fmt.Errorf("error creating service configuration: %w", err)
 		}
 		fmt.Println("Service configuration created successfully")
 		return nil
