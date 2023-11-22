@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 5 # just in case ¯\_(ツ)_/¯
     strategy:
       matrix:
-        go: ['stable', 'oldstable']
+        go: ['stable']
     steps:
       - uses: actions/checkout@v3
 
