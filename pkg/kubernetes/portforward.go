@@ -82,7 +82,7 @@ func validateInputs(namespace, resource, portMapping string) error {
 
 func establishPortForwarding(ctx context.Context, pf *PortForwarder, podName string) error {
 	path := fmt.Sprintf("/api/v1/namespaces/%s/pods/%s/portforward", pf.Namespace, podName)
-	hostIP := strings.TrimLeft(pf.RestConfig.Host, "https://")
+	hostIP := strings.TrimPrefix(pf.RestConfig.Host, "https://")
 
 	transport, upgrader, err := spdy.RoundTripperFor(pf.RestConfig)
 	if err != nil {
