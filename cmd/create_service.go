@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/xjasmx/kpfm/pkg/config"
+	"github.com/xjasmx/kpfm/pkg/utils"
 )
 
 var createServiceCmd = &cobra.Command{
@@ -30,7 +31,7 @@ func init() {
 	createServiceCmd.Flags().StringP("service", "s", "", "Specify the name of the Kubernetes service for the session")
 	createServiceCmd.Flags().StringP("port", "p", "", "Specify the port mapping of the Kubernetes service for the session")
 
-	createServiceCmd.MarkFlagRequired("namespace")
-	createServiceCmd.MarkFlagRequired("service")
-	createServiceCmd.MarkFlagRequired("port")
+	utils.MustMarkFlagRequired(createServiceCmd, "namespace")
+	utils.MustMarkFlagRequired(createServiceCmd, "service")
+	utils.MustMarkFlagRequired(createServiceCmd, "port")
 }
