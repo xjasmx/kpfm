@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/xjasmx/kpfm/pkg/config"
+	"github.com/xjasmx/kpfm/pkg/utils"
 	"strings"
 )
 
@@ -31,5 +32,6 @@ var createGroupCmd = &cobra.Command{
 
 func init() {
 	createGroupCmd.Flags().StringP("services", "s", "", "Define or reference a list of service aliases when creating a group")
-	createGroupCmd.MarkFlagRequired("services")
+
+	utils.MustMarkFlagRequired(createGroupCmd, "services")
 }
