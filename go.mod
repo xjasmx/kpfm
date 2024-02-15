@@ -6,7 +6,7 @@ require (
 	github.com/go-playground/validator/v10 v10.17.0
 	github.com/spf13/cobra v1.8.0
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/apimachinery v0.29.1
+	k8s.io/apimachinery v0.29.2
 	k8s.io/client-go v0.29.1
 )
 
